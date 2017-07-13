@@ -19,13 +19,60 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       :host {
         display: block;
+        postion: relative;
+        overflow: hidden;
+      }
+      /*
+      In a shadow root, the :host CSS selector refers to the host of the
+      shadow root (i.e. the <my-carousel> element), and the :slotted() selector
+       refers to the immediate children that are in that slot.
+       Though this is not required with the native implementation, one of
+       the limitations of the Shady DOM polyfill is that you must have a selector
+       to the left of ::slotted(). In this case, we will use div > ::slotted().
+      */
+      div > ::slotted(:not([selected])) {
+        display: none;
+      }
+      button {
+        position: absolute;
+        top: calc(50% - 100px);
+        padding: 0;
+        line-height: 40px;
+        border: none;
+        background: none;
+        color: #DDD;
+        font-size: 100px;
+        font-weight: bold;
+        opacity: 0.7;
+      }
+
+      button:hover,
+      button:focus {
+        opacity: 1;
+      }
+
+      #prevBtn {
+        left: 12px;
+      }
+
+      #nextBtn {
+        right: 12px;
+      }
+
+      button[disabled] {
+        opacity: 0.3;
       }
 
     </style>
 
-    <p>TODO: Implement image carousel</p>
+    <div>
+      <slot>></slot>
+    </div>
+    <button id="prevBtn" on-click="previous">&#x276E;</button>
+    <button id="nextBtn" on-click="next">&#x276F;</button>
 
-  </template>
+</template>
+
 
   <script>
 
@@ -33,10 +80,106 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     class MyCarousel extends Polymer.Element {
 
       static get is() { return 'my-carousel' }
+      static get properties() {
+        return {
+          selected: {
+            type: Object,
+            observer: '_selectedChanged'
+          }
+        };
+      }
 
+      constructor() {
+        super();
+      }
       connectedCallback() {
         super.connectedCallback();
+        /*
+        Use _resetSelected() method inside connectedCallback().
+        Also call this method on slotchange so that we can update the
+        carousel if child elements are added or removed.
+        */
+        this._resetSelected();
+        this.shadowRoot.addEventListener('slotchange',this._resetSelected.bind(this));
       }
+
+      disconnectedCallback() {
+        super.disconnectedCallback()
+      }
+
+      createdCallback(){
+        super.createdCallback()
+      }
+
+      attachedCallBack(){
+        super.attachedCallback()
+      }
+
+      attributedChangedCallback() {
+        super.attributedChangedCallback() ;
+      }
+
+      /*
+        define the _resetSelected() method that will set the
+        selected attribute on the first element child
+      */
+      _resetSelected() {
+        /*
+        if (this.firstElementChild) {
+          this.firstElementChild.setAttribute('selected','');
+        }
+        */
+        /* if there is already a selected child element, don't modify it unless
+        it is no longer a child of the carousel */
+          if (!this.selected  || this.selected.parentElement !== this) {
+            this.selected = this.firstElementChild;
+          }
+        }
+
+      _selectedChanged(selected , oldSelected ) {
+          if (oldSelected ) oldSelected.removeAttribute('selected');
+          if (selected) selected.setAttribute('selected','');
+          console.log(selected,oldSelected);
+          /*
+            Polymer builds a static map of node IDs, this.$, that allows you to
+            quickly access elements in the <template> with the corresponding id.
+            For more details,
+            see https://www.polymer-project.org/2.0/docs/devguide/dom-template#node-finding.
+          */
+          if (selected) {
+            this.$.prevBtn.disabled = !selected.previousElementSibling;
+            this.$.nextBtn.disabled = !selected.nextElementSibling;
+          } else {
+            this.$.prevBtn.disabled = true;
+            this.$.nextBtn.disabled = true;
+          }
+
+        }
+
+      /*
+      define two methods, previous() and next(), that will change the selected
+      image. These methods will become part of the element's public API,
+      so they don't start with underscores
+      */
+
+      previous() {
+
+        const elem = this.selected && this.selected.previousElementSibling;
+        console.log("p=",elem);
+        if (elem) {
+          this.selected = elem;
+        }
+      }
+
+      next() {
+        const elem = this.selected && this.selected.nextElementSibling;
+        console.log("n=",elem);
+        if (elem) {
+          this.selected = elem;
+        }
+      }
+
+
 
     }
 
