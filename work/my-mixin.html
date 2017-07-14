@@ -1,0 +1,67 @@
+<script>
+const MyMixin = superclass => class extends superclass {
+
+  static get properties() {
+    return {
+      /**
+      * Currently selected
+      */
+      selected: {
+        type: Object,
+        observer: '_selectedChanged'
+      },
+      /**
+       * Boolean value to decide if images should change automatically.
+       *  Navigation buttons will always be hidden if this is true.
+       */
+      autoscroll: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+        observer: '_autoScroll'
+      },
+      /**
+       * Time after which image should change.
+       * This will only work if autoscroll is set to true
+       */
+        interval: {
+          type: Number,
+          value: 3000
+        }
+    };
+  }
+
+  connectedCallback() {
+    super.connectedCallback();
+    /**  Use _resetSelected() method inside connectedCallback().
+     * Also call this method on slotchange so that we can update the
+     * carousel if child elements are added or removed.
+    */
+
+    this.shadowRoot.addEventListener('slotchange', this._resetSelected.bind(this));
+    this._resetSelected();
+  }
+
+  _selectedChanged(selected, oldSelected) {
+    if (oldSelected) oldSelected.removeAttribute('selected');
+    if (selected) selected.setAttribute('selected', '');
+  }
+
+  /** define the _resetSelected() method that will set the
+    *selected attribute on the first element child
+  */
+  _resetSelected() {
+  /** if there is already a selected child element, don't modify it unless
+    * it is no longer a child of the carousel
+  */
+    if (!this.selected || this.selected.parentElement !== this) {
+      this.selected = this.firstElementChild;
+    }
+  }
+  _autoScroll() {
+    if (this.autoscroll) {
+      setInterval(_ => this.next(), this.interval);
+    }
+  }
+};
+</script>

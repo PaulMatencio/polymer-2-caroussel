@@ -10,6 +10,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 <!-- Load the Polymer.Element base class -->
 <link rel="import" href="bower_components/polymer/polymer-element.html">
+<link rel="import" href="my-mixin.html">
 
 <dom-module id="my-carousel">
   <template>
@@ -19,29 +20,31 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       :host {
         display: block;
-        postion: relative;
+        position: relative;
         overflow: hidden;
       }
-      /*
-      In a shadow root, the :host CSS selector refers to the host of the
-      shadow root (i.e. the <my-carousel> element), and the :slotted() selector
-       refers to the immediate children that are in that slot.
-       Though this is not required with the native implementation, one of
-       the limitations of the Shady DOM polyfill is that you must have a selector
-       to the left of ::slotted(). In this case, we will use div > ::slotted().
+
+
+      /**
+       * In a shadow root, the :host CSS selector refers to the host of the
+       * shadow root (i.e. the <my-carousel> element), and the :slotted() selector
+       * refers to the immediate children that are in that slot.
+       * Though this is not required with the native implementation, one of
+       * the limitations of the Shady DOM polyfill is that you must have a selector
+       * to the left of ::slotted(). In this case, we will use div > ::slotted().
       */
       div > ::slotted(:not([selected])) {
         display: none;
       }
       button {
         position: absolute;
-        top: calc(50% - 100px);
+        top: calc(50% - 20px);
         padding: 0;
         line-height: 40px;
         border: none;
         background: none;
         color: #DDD;
-        font-size: 100px;
+        font-size: 50px;
         font-weight: bold;
         opacity: 0.7;
       }
@@ -59,8 +62,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         right: 12px;
       }
 
+      .reset {
+        top: calc(100% - 30px);
+        font-size: 20px;
+        line-height: 20px;
+      }
+      #first {
+        left: calc(45% - 30px);
+      }
+      #last {
+        left: calc(55% + 30px);
+      }
       button[disabled] {
         opacity: 0.3;
+        color: red;
       }
 
     </style>
@@ -70,117 +85,168 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </div>
     <button id="prevBtn" on-click="previous">&#x276E;</button>
     <button id="nextBtn" on-click="next">&#x276F;</button>
+    <button id="first" class="reset" on-click="first">&#x276E;&#x276E;</button>
+    <button id="last" class="reset" on-click="last">&#x276F;&#x276F;</button>
 
 </template>
-
-
   <script>
-
-    // Extend Polymer.Element base class
-    class MyCarousel extends Polymer.Element {
-
+    /** Extend Polymer.Element base class
+     *  class MyCarousel extends Polymer.Element
+     */
+    class MyCarousel extends MyMixin(Polymer.Element)   {
       static get is() { return 'my-carousel' }
-      static get properties() {
-        return {
-          selected: {
-            type: Object,
-            observer: '_selectedChanged'
-          }
-        };
-      }
-
       constructor() {
         super();
       }
-      connectedCallback() {
-        super.connectedCallback();
-        /*
-        Use _resetSelected() method inside connectedCallback().
-        Also call this method on slotchange so that we can update the
-        carousel if child elements are added or removed.
-        */
-        this._resetSelected();
-        this.shadowRoot.addEventListener('slotchange',this._resetSelected.bind(this));
+
+      ready() {
+        super.ready();
+        requestAnimationFrame(this._installListeners.bind(this));
       }
-
-      disconnectedCallback() {
-        super.disconnectedCallback()
-      }
-
-      createdCallback(){
-        super.createdCallback()
-      }
-
-      attachedCallBack(){
-        super.attachedCallback()
-      }
-
-      attributedChangedCallback() {
-        super.attributedChangedCallback() ;
-      }
-
-      /*
-        define the _resetSelected() method that will set the
-        selected attribute on the first element child
-      */
-      _resetSelected() {
-        /*
-        if (this.firstElementChild) {
-          this.firstElementChild.setAttribute('selected','');
-        }
-        */
-        /* if there is already a selected child element, don't modify it unless
-        it is no longer a child of the carousel */
-          if (!this.selected  || this.selected.parentElement !== this) {
-            this.selected = this.firstElementChild;
-          }
-        }
-
       _selectedChanged(selected , oldSelected ) {
-          if (oldSelected ) oldSelected.removeAttribute('selected');
-          if (selected) selected.setAttribute('selected','');
-          console.log(selected,oldSelected);
-          /*
-            Polymer builds a static map of node IDs, this.$, that allows you to
-            quickly access elements in the <template> with the corresponding id.
-            For more details,
-            see https://www.polymer-project.org/2.0/docs/devguide/dom-template#node-finding.
+          super._selectedChanged(selected, oldSelected);
+          /**
+            * Polymer builds a static map of node IDs, this.$, that allows you to
+            * quickly access elements in the <template> with the corresponding id.
+            * For more details,
+            * see https://www.polymer-project.org/2.0/docs/devguide/dom-template#node-finding.
           */
           if (selected) {
-            this.$.prevBtn.disabled = !selected.previousElementSibling;
-            this.$.nextBtn.disabled = !selected.nextElementSibling;
+            var previous = selected.previousElementSibling;
+            var next = selected.nextElementSibling;
+
+            /*
+            * this.$.prevBtn.disabled = !selected.previousElementSibling;
+            * this.$.nextBtn.disabled = !selected.nextElementSibling;
+            */
+
+            this.$.prevBtn.disabled = !previous ;
+            this.$.nextBtn.disabled = !next;
+
+
+            /* lazy-load images */
+            this._loadImage(selected);
+            this._loadImage(previous);
+            this._loadImage(next);
+
           } else {
             this.$.prevBtn.disabled = true;
             this.$.nextBtn.disabled = true;
           }
-
         }
 
-      /*
-      define two methods, previous() and next(), that will change the selected
-      image. These methods will become part of the element's public API,
-      so they don't start with underscores
+        /* Lazy-load images */
+
+      _loadImage(img) {
+        // console.log(img)
+        if (img && !img.src) {
+        img.src = img.getAttribute('data-src');
+        }
+      }
+
+      /* adding transition */
+      _translateX(elem, x, transition) {
+        elem.style.display = 'block';
+        elem.style.transition = transition ? 'transform 0.3s' : '';
+        elem.style.transform = 'translate3d(' + x + 'px, 0, 0)';
+      }
+
+      _installListeners() {
+        this.addEventListener('transitionend', this._resetChildrenStyles.bind(this));
+      }
+
+
+      /**
+      * The _resetChildrenStyles() method will clear the style attributes that
+      * were set by our element. Now we have a carousel that transitions
+       between images:
+      */
+      _resetChildrenStyles() {
+        /*
+        let elem = this.firstElementChild;
+        while (elem) {
+          elem.style.display = '';
+          elem.style.transition = '';
+          elem.style.transform = '';
+          elem = elem.nextElementSibling;
+        }
+        */
+      }
+
+
+      /**
+      * define two methods, previous() and next(), that will change the selected
+      * image. These methods will become part of the element's public API,
+      * so they don't start with underscores
       */
 
       previous() {
-
         const elem = this.selected && this.selected.previousElementSibling;
-        console.log("p=",elem);
         if (elem) {
+          // Setup transition start state
+          const oldSelected = this.selected;
+          this._translateX(oldSelected, 0);
+          this._translateX(elem, -this.offsetWidth);
+          // star the transition
           this.selected = elem;
+          this._translateX(oldSelected, this.offsetWidth, true /* transition */);
+          this._translateX(elem, 0, true /* transition */);
+        } else {
+          /*
+          var last  = this.lastElementChild;
+          this.selected = last;
+          this._translateX(last, 0, true /* transition );
+          */
+          this.last();
         }
       }
 
       next() {
         const elem = this.selected && this.selected.nextElementSibling;
-        console.log("n=",elem);
         if (elem) {
+          // Setup transition start state
+          const oldSelected = this.selected;
+          this._translateX(oldSelected, 0);
+          this._translateX(elem, this.offsetWidth);
+          // star the transition
           this.selected = elem;
+          this._translateX(oldSelected,-this.offsetWidth,true);
+          this._translateX(elem, 0, true /* transition */);
+        } else {
+          /*
+          var first = this.firstElementChild;
+          this.selected = first;
+          this._translateX(first, 0, true /* transition );
+          */
+          this.first()
         }
       }
 
+      /**
+      * define two methods, first() and last(), that will jump to the first
+      * element or the last element of the caroussel
+      */
 
+      first() {
+        const elem = this.selected ;
+        // this._translateX(elem, 0);
+        this._translateX(elem, this.offsetWidth,true);
+        var first = this.firstElementChild;
+        this.selected = first;
+        this._translateX(first, 0, true /* transition */);
 
+      }
+
+      last() {
+        const elem = this.selected ;
+        // this._translateX(elem, 0);
+        console.log(elem, this.offsetWidth);
+       this._translateX(elem, -this.offsetWidth,true);
+        var last = this.lastElementChild;
+        this.selected = last;
+        this._translateX(last, 0, true /* transition */);
+
+      }
     }
 
     // Register custom element definition using standard platform API
