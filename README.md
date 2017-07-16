@@ -16,27 +16,27 @@ In this codelab, you’ll learn how to build a simple image carousel element wit
 
 #### API
 
-_next_image()_
+	_next_image()_
 
-_previous_image()_
+	_previous_image()_
 
-_increase()_
+	_increase()_
 
-_decrease()_
+	_decrease()_
 
-_first_image()_
+	_first_image()_
 
-_last_image()_
+	_last_image()_
 
 #### Public properties:
 
-**selected**  type:Object
+	**selected** 	 	type:Object
 
-**autoscroll** type:Boolean value: false
+	**autoscroll** 	type:Boolean 	value: false
 
-**interval**  type:number value:9000
+	**interval**  	type:number 	value:9000
 
-**actions_bar** type:Boolean value: false
+	**actions_bar** 	type:Boolean 	value: false
 
 
 
