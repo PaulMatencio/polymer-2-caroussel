@@ -6,6 +6,14 @@ In this codelab, you’ll learn how to build a simple image carousel element wit
 
 `The finished and enhanced my-caroussel Element is defined in the ./work folder`
 
+#### Enhancement
+	1. add custom-style
+	2. add  autoscroll  <autoscroll>
+	3. add  autoscroll interval <interval=3000> 
+   	..1. increasw interval by 1000 
+	..2. decrease interval by 1000
+    	4. add icons for jumping to the first/last images 
+
 ## Clone it
 
   git clone  https://github.com/PaulMatencio/polymer-2-caroussel
@@ -13,13 +21,15 @@ In this codelab, you’ll learn how to build a simple image carousel element wit
 ## Installation
 
  The finished and enhanced my-caroussel Element is defined in the ./work folder   
- cd work
- bower install
+
+ 
+ 	`cd work`
+ 	`bower install`
 
 ## Demo
 
-cd  work
-polymer serve
+	`cd  work`
+	`polymer serve`
 
 
 ## Examples
@@ -35,15 +45,15 @@ polymer serve
 </my-caroussel>
 
 <my-caroussel autoscroll>
-  <!--  default autoscrolling interval 3000 -->
+  <!--  default autoscrolling interval=3000 -->
   <img data-src="https://app-layout-assets.appspot.com/assets/bg1.jpg">
   <img data-src="https://app-layout-assets.appspot.com/assets/bg2.jpg">
   <img data-src="https://app-layout-assets.appspot.com/assets/bg3.jpg">
   <img data-src="https://app-layout-assets.appspot.com/assets/bg4.jpg">
 </my-caroussel>
 
-<my-caroussel autoscroll interval=2000>
-  <!--  autoscrolling interval 3000 -->
+<my-caroussel autoscroll interval=2000 actions_bar>
+  <!--  autoscrolling interval= 3000 actions_var -->
   <img data-src="https://app-layout-assets.appspot.com/assets/bg1.jpg">
   <img data-src="https://app-layout-assets.appspot.com/assets/bg2.jpg">
   <img data-src="https://app-layout-assets.appspot.com/assets/bg3.jpg">

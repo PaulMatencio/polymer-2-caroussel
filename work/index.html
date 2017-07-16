@@ -20,6 +20,28 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     called Web Components. On browsers that don't natively support Web Components,
     you'll need to load a polyfill
   -->
+  <custon-style>
+    <style>
+    /* Define a document-wide default—will not override a :host rule in  */
+      html {
+        --iron-iccon-stroke-color: black;
+      }
+      /* Override the value specified in demo-element */
+      my-carousel {
+          --iron-icon-fill-color: blue;
+          --iron-icon-stroke-color: blue;
+          --iron-icon-height: 36px;
+          --iron-icon-width: 36px;
+      }
+        /* This rule will apply to the body of this html! */
+      body {
+          --iron-icon-fill-color: blue;
+          --iron-icon-stroke-color: blue;
+          --iron-icon-height: 36px;
+          --iron-icon-width: 36px;
+      }
+    </style>
+  </custom-style>
   <style>
     my-carousel {
       width: 100%;
@@ -38,18 +60,24 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   </style>
   <script src="bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+  <!--link rel="import" href="my-images.html"-->
   <link rel="import" href="my-carousel.html">
+  <!--link rel="import" href="bower_components/iron-icons/iron-icons.html"-->
+  <!--link rel="import" href="icon-toggle.html"-->
+
 </head>
 
 <body>
-  <my-carousel autoscroll interval=2000 >
-    <!--  Lazy-load images -->
+  <!--icon-toggle icon="polymer"></icon-toggle-->
+  <my-carousel autoscroll interval=3000 actions_bar>
+
+
     <img data-src="https://app-layout-assets.appspot.com/assets/bg1.jpg">
     <img data-src="https://app-layout-assets.appspot.com/assets/bg2.jpg">
     <img data-src="https://app-layout-assets.appspot.com/assets/bg3.jpg">
     <img data-src="https://app-layout-assets.appspot.com/assets/bg4.jpg">
-  </my-carousel>
 
+  </my-carousel>
   <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
 
   <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
@@ -60,7 +88,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   <script>
       /* move autosrolling inside my-mixin.html    */
-      /* const carousel = document.querySelector('my-carousel'); */
+      // const carousel = document.querySelector('my-carousel');
       /* setInterval(_ => carousel.next(), 3000); */
   </script>
 </body>

@@ -10,6 +10,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 <!-- Load the Polymer.Element base class -->
 <link rel="import" href="bower_components/polymer/polymer-element.html">
+<link rel="import" href="bower_components/polymer/lib/elements/dom-if.html">
+<link rel="import" href="bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="bower_components/iron-icons/av-icons.html">
+<!--link rel="import" href="/bower_components/polymer/lib/utils/flattened-nodes-observer.html"-->
+<!--link rel="import" href="bower_components/polymer/lib/elements/dom-repeat.html"-->
 <link rel="import" href="my-mixin.html">
 
 <dom-module id="my-carousel">
@@ -33,6 +38,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
        * the limitations of the Shady DOM polyfill is that you must have a selector
        * to the left of ::slotted(). In this case, we will use div > ::slotted().
       */
+
+      /* slot replace content */
       div > ::slotted(:not([selected])) {
         display: none;
       }
@@ -61,32 +68,108 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       #nextBtn {
         right: 12px;
       }
+      /*  NAVIGATION ICONS */
+      .navigation-icons {
+        @apply --layout;
+        @apply --layout-center;
+        position: absolute;
+        height: calc(var(--iron-icon-height, 24px) + 15px);
+        background: var(--image-carousel-navigation-icon-color, rgba(255, 255, 255, 1));
+        box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14),
+                    0 1px 5px 0 rgba(0, 0, 0, 0.12),
+                    0 3px 1px -2px rgba(0, 0, 0, 0.2);
+        transition: box-shadow 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+        border-radius: 50%;
+        background-color:  currentcolor ;
+        cursor: pointer;
+        @apply --navigation-icon-mixin;
+      }
 
-      .reset {
-        top: calc(100% - 30px);
-        font-size: 20px;
-        line-height: 20px;
+      .navigation-icons:hover {
+        box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.14),
+                    0 1px 10px 0 rgba(0, 0, 0, 0.12),
+                    0 2px 4px -1px rgba(0, 0, 0, 0.4);
+        @apply --navigation-icon-hover-mixin;
       }
-      #first {
-        left: calc(45% - 30px);
+
+      .navigation-icons[hidden] {
+        visibility: hidden;
       }
-      #last {
-        left: calc(55% + 30px);
+
+      .left-icon {
+        left: calc(var(--iron-icon-width, 24px)/-2);
+        fill: var(--iron-icon-fill-color, currentcolor);
+        @apply --left-navigation-icon-mixin;
       }
-      button[disabled] {
-        opacity: 0.3;
-        color: red;
+
+      .right-icon {
+        right: calc(var(--iron-icon-width, 24px)/-2);
+        fill: var(--iron-icon-fill-color, currentcolor);
+        @apply --right-navigation-icon-mixin;
       }
+
+      .first-icon {
+        left: 40%;
+        bottom: calc(var(--iron-icon-width, 24px));
+        @apply --left-navigation-icon-mixin;
+      }
+
+      .add-icon {
+        left: 45%;
+        bottom: calc(var(--iron-icon-width, 24px));
+        @apply --left-navigation-icon-mixin;
+      }
+
+      .remove-icon {
+        right: 45%;
+        bottom: calc(var(--iron-icon-width, 24px));
+        @apply --left-navigation-icon-mixin;
+      }
+
+      .last-icon {
+        right: 40%;
+        bottom: calc(var(--iron-icon-width, 24px));
+        @apply --right-navigation-icon-mixin;
+      }
+
+    button[disabled] {
+      opacity: 0.3;
+      color: red;
+    }
 
     </style>
-
+    <!--div>
+        <icon-toggle toggle-icon="star"></icon-toggle>
+        <icon-toggle toggle-icon="star" pressed></icon-toggle>
+    </div-->
     <div>
       <slot>></slot>
     </div>
-    <button id="prevBtn" on-click="previous">&#x276E;</button>
-    <button id="nextBtn" on-click="next">&#x276F;</button>
-    <button id="first" class="reset" on-click="first">&#x276E;&#x276E;</button>
-    <button id="last" class="reset" on-click="last">&#x276F;&#x276F;</button>
+
+    <button id="prevBtn" on-click="previous_image">&#x276E;</button>
+    <button id="nextBtn" on-click="next_image">&#x276F;</button>
+
+    <dom-if if="[[actions_bar]]">
+      <template>
+        <!--button id="first" class="reset" on-click="first">&#x276E;&#x276E;</button>
+        <button id="increase" class="reset" on-click="increase"><span></span>+</button>
+        <button id="decrease" class="reset" on-click="decrease"><span></span>-</button>
+        <button id="last" class="reset" on-click="last">&#x276F;&#x276F;</button-->
+        <div class="navigation-icons first-icon"  on-click="first_image">
+          <iron-icon icon="av:fast-rewind"></iron-icon>
+        </div>
+        <div class="navigation-icons add-icon"  on-click="increase_interval">
+          <iron-icon icon="add-circle"></iron-icon>
+        </div>
+        <div class="navigation-icons remove-icon"  on-click="decrease_interval">
+          <iron-icon icon="remove-circle"></iron-icon>
+        </div>
+        <div class="navigation-icons last-icon"  on-click="last_image">
+          <iron-icon icon="av:fast-forward"></iron-icon>
+        </div>
+
+      </template>
+    <dom-if>
 
 </template>
   <script>
@@ -101,6 +184,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       ready() {
         super.ready();
+        console.log(this.actions);
+        /**
+          callback this._installListeners.bind(this)
+        */
         requestAnimationFrame(this._installListeners.bind(this));
       }
       _selectedChanged(selected , oldSelected ) {
@@ -162,7 +249,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
        between images:
       */
       _resetChildrenStyles() {
-        /*
+
         let elem = this.firstElementChild;
         while (elem) {
           elem.style.display = '';
@@ -170,7 +257,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           elem.style.transform = '';
           elem = elem.nextElementSibling;
         }
-        */
+
+
       }
 
 
@@ -180,7 +268,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       * so they don't start with underscores
       */
 
-      previous() {
+      previous_image() {
         const elem = this.selected && this.selected.previousElementSibling;
         if (elem) {
           // Setup transition start state
@@ -197,11 +285,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           this.selected = last;
           this._translateX(last, 0, true /* transition );
           */
-          this.last();
+          this.last_image();
         }
       }
 
-      next() {
+      next_image() {
         const elem = this.selected && this.selected.nextElementSibling;
         if (elem) {
           // Setup transition start state
@@ -218,7 +306,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           this.selected = first;
           this._translateX(first, 0, true /* transition );
           */
-          this.first()
+          this.first_image()
         }
       }
 
@@ -227,7 +315,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       * element or the last element of the caroussel
       */
 
-      first() {
+      first_image() {
         const elem = this.selected ;
         // this._translateX(elem, 0);
         this._translateX(elem, this.offsetWidth,true);
@@ -237,7 +325,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       }
 
-      last() {
+      last_image() {
         const elem = this.selected ;
         // this._translateX(elem, 0);
         console.log(elem, this.offsetWidth);
@@ -246,6 +334,21 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         this.selected = last;
         this._translateX(last, 0, true /* transition */);
 
+      }
+
+      increase_interval() {
+        this.interval += this._increment;
+        console.log(this.interval);
+        this._autoScroll();
+      }
+
+      decrease_interval() {
+        this.interval -= this._increment;
+        if (this.interval < this._increment) {
+          this.interval = this._increment;
+        }
+        this._autoScroll();
+        console.log(this.interval);
       }
     }
 

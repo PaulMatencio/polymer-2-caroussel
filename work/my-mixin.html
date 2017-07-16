@@ -17,6 +17,7 @@ const MyMixin = superclass => class extends superclass {
       autoscroll: {
         type: Boolean,
         value: false,
+        notify: true,
         reflectToAttribute: true,
         observer: '_autoScroll'
       },
@@ -24,10 +25,27 @@ const MyMixin = superclass => class extends superclass {
        * Time after which image should change.
        * This will only work if autoscroll is set to true
        */
-        interval: {
-          type: Number,
-          value: 3000
-        }
+      interval: {
+        type: Number,
+        value: 3000
+      },
+
+      _increment: {
+        type: Number,
+        readOnly: true,
+        value: 1000
+      },
+
+      _currentInterval: {
+        type: Object,
+      },
+
+      actions_bar: {
+        type: Boolean,
+        /* notify: true, */
+        value: false
+        /* reflectToAttribute: true */
+      }
     };
   }
 
@@ -37,7 +55,6 @@ const MyMixin = superclass => class extends superclass {
      * Also call this method on slotchange so that we can update the
      * carousel if child elements are added or removed.
     */
-
     this.shadowRoot.addEventListener('slotchange', this._resetSelected.bind(this));
     this._resetSelected();
   }
@@ -59,8 +76,12 @@ const MyMixin = superclass => class extends superclass {
     }
   }
   _autoScroll() {
+    if ( typeof(this.currentInterval)  != undefined ) {
+      clearInterval(this.currentInterval)
+    }
     if (this.autoscroll) {
-      setInterval(_ => this.next(), this.interval);
+      this.currentInterval = setInterval(_ => this.next_image(), this.interval);
+      console.log(this.currentInterval);
     }
   }
 };
