@@ -10,8 +10,8 @@ In this codelab, you’ll learn how to build a simple image carousel element wit
 	1. add custom-style
 	2. add  autoscroll  <autoscroll>
 	3. add  autoscroll interval <interval=3000> 
-   	..1. increasw interval by 1000 
-	..2. decrease interval by 1000
+   		3.1. increasw interval by 1000 
+		3.2. decrease interval by 1000
     	4. add icons for jumping to the first/last images 
 
 ## Clone it
@@ -20,7 +20,7 @@ In this codelab, you’ll learn how to build a simple image carousel element wit
 
 ## Installation
 
- The finished and enhanced my-caroussel Element is defined in the ./work folder   
+ The finished and enhanced my-caroussel element is  ./work folder   
 
  
  	`cd work`
