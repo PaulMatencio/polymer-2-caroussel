@@ -10,18 +10,26 @@ In this codelab, you’ll learn how to build a simple image carousel element wit
 	1. add custom-style
 	2. add  autoscroll  <autoscroll>
 	3. add  autoscroll interval <interval=3000>
-   	3.1. increase interval by 1000
-		3.2. decrease interval by 1000
+   3.1. increase interval by 1000
+	 3.2. decrease interval by 1000
   4. add icons for jumping to the first/last images
 
 #### API
 
-next_image()	
-previous_image()
-increase()
-decrease()
-first_image()
-last_image()
+_next_image()_
+_previous_image()_
+_increase()_
+_decrease()_
+_first_image()_
+_last_image()_
+
+#### Public properties:
+
+**selected**  type:Object
+**autoscroll** type:Boolean value: false
+**interval**  type:number value:9000
+**actions_bar** type:Boolean value: false
+
 
 
 ## Clone it
