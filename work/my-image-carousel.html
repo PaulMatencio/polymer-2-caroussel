@@ -17,7 +17,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <!--link rel="import" href="bower_components/polymer/lib/elements/dom-repeat.html"-->
 <link rel="import" href="my-mixin.html">
 
-<dom-module id="my-carousel">
+<dom-module id="my-image-carousel">
   <template>
 
     <!-- Styles MUST be inside template -->
@@ -176,15 +176,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     /** Extend Polymer.Element base class
      *  class MyCarousel extends Polymer.Element
      */
-    class MyCarousel extends MyMixin(Polymer.Element)   {
-      static get is() { return 'my-carousel' }
+    class MyImageCarousel extends MyMixin(Polymer.Element)   {
+      static get is() { return 'my-image-carousel' }
       constructor() {
         super();
       }
 
       ready() {
         super.ready();
-        console.log(this.actions);
+        console.log(this.actions_bar);
         /**
           callback this._installListeners.bind(this)
         */
@@ -234,7 +234,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       /* adding transition */
       _translateX(elem, x, transition) {
         elem.style.display = 'block';
-        elem.style.transition = transition ? 'transform 0.3s' : '';
+        elem.style.transition = transition ? 'transform 0.1s' : '';
         elem.style.transform = 'translate3d(' + x + 'px, 0, 0)';
       }
 
@@ -344,7 +344,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       decrease_interval() {
         this.interval -= this._increment;
-        if (this.interval < this._increment) {
+        if (this.interval < this._increment/2) {
           this.interval = this._increment;
         }
         this._autoScroll();
@@ -353,7 +353,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     }
 
     // Register custom element definition using standard platform API
-    customElements.define(MyCarousel.is, MyCarousel);
+    customElements.define(MyImageCarousel.is, MyImageCarousel);
 
   </script>
 </dom-module>
